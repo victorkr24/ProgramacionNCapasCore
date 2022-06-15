@@ -1,0 +1,788 @@
+----BL
+using Microsoft.EntityFrameworkCore;
+
+namespace BL
+{
+    public class Aseguradora
+    {
+        public static ML.Result AseguradoraAddEF(ML.Aseguradora aseguradora)
+        {
+            ML.Result result = new ML.Result();
+
+            try
+            {
+                using (DL.VAvilesProgramacionNCapasContext context = new DL.VAvilesProgramacionNCapasContext())
+                {
+                    var query = context.Database.ExecuteSqlRaw($"AseguradoraAdd '{aseguradora.Nombre}',{aseguradora.Usuario.IdUsuario}");
+                    // '{aseguradora.FechaCreacion}','{aseguradora.FechaModificacion}'
+
+
+                    if (query >= 1)
+                    {
+                        result.Correct = true;
+                    }
+                    else
+                    {
+                        result.Correct = false;
+                        result.ErrorMessage = "No se insertó el registro";
+                    }
+
+                    result.Correct = true;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Correct = false;
+                result.ErrorMessage = ex.Message;
+            }
+            return result;
+        }
+        //UPDATE
+        public static ML.Result AseguradoraUpdateEF(ML.Aseguradora aseguradora) //12/12/2019 No se elimina la credencial, se cambia
+        {
+            ML.Result result = new ML.Result();
+            try
+            {
+                using (DL.VAvilesProgramacionNCapasContext context = new DL.VAvilesProgramacionNCapasContext())
+                {
+                    var query = context.Database.ExecuteSqlRaw($"AseguradoraUpdate {aseguradora.IdAseguradora},'{aseguradora.Nombre}',{aseguradora.Usuario.IdUsuario}");
+
+                    if (query >= 1)
+                    {
+                        result.Correct = true;
+                    }
+                    else
+                    {
+                        result.Correct = false;
+                        result.ErrorMessage = "No se actualizó el status de la credencial";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Correct = false;
+                result.ErrorMessage = ex.Message;
+            }
+
+            return result;
+        }
+        //DELETE
+        public static ML.Result AseguradoraDeleteEF(ML.Aseguradora aseguradora) //12/12/2019 No se elimina la credencial, se cambia
+        {
+            ML.Result result = new ML.Result();
+            try
+            {
+                using (DL.VAvilesProgramacionNCapasContext context = new DL.VAvilesProgramacionNCapasContext())
+                {
+                    var query = context.Database.ExecuteSqlRaw($"AseguradoraDelete {aseguradora.IdAseguradora}");
+                    //var updateResult = context.AseguradoraDelete(aseguradora.IdAseguradora);
+
+                    if (query >= 1)
+                    {
+                        result.Correct = true;
+                    }
+                    else
+                    {
+                        result.Correct = false;
+                        result.ErrorMessage = "No se actualizó el status de la credencial";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Correct = false;
+                result.ErrorMessage = ex.Message;
+            }
+
+            return result;
+        }
+        //GETALL
+
+        public static ML.Result AseguradoraGetAllEF()
+        {
+            ML.Result result = new ML.Result();
+
+            try
+            {
+                using (DL.VAvilesProgramacionNCapasContext context = new DL.VAvilesProgramacionNCapasContext())
+                {
+        
+                    //var aseguradoras = context.AseguradoraGetAll().ToList();
+                    var aseguradoras = context.Aseguradoras.FromSqlRaw($"AseguradoraGetAll").ToList();
+
+                    result.Objects = new List<object>();
+
+                    if (aseguradoras != null)
+                    {
+                        foreach (var obj in aseguradoras)
+                        {
+                            ML.Aseguradora aseguradora = new ML.Aseguradora();
+                           
+
+                            aseguradora.IdAseguradora = obj.IdAsegurradora;
+                            aseguradora.Nombre = obj.Nombre;
+                            aseguradora.FechaCreacion = obj.FechaCreacion.ToString();
+                            aseguradora.FechaModificacion = obj.FechaModificacion.ToString();
+                            aseguradora.Usuario = new ML.Usuario();
+                            aseguradora.Usuario.IdUsuario = obj.IdUsuario.Value;
+                            aseguradora.Usuario.Nombre = obj.UsuarioNombre;
+                            
+
+
+                            result.Objects.Add(aseguradora);
+                        }
+
+                        result.Correct = true;
+                    }
+                    else
+                    {
+                        result.Correct = false;
+                        result.ErrorMessage = "No se encontraron registros.";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                result.Correct = false;
+                result.ErrorMessage = ex.Message;
+
+            }
+
+            return result;
+        }
+
+        //GETBYID
+
+        public static ML.Result GetByIdEF(int IdAseguradora)
+        {
+            ML.Result result = new ML.Result();
+            try
+            {
+                using (DL.VAvilesProgramacionNCapasContext context = new DL.VAvilesProgramacionNCapasContext())
+                {
+                    //var objDepartamento = context.DepartamentoGetById(IdDepartamento).FirstOrDefault();
+                    var objaseguradora = context.Aseguradoras.FromSqlRaw($"AseguradoraGetById {IdAseguradora}").AsEnumerable().FirstOrDefault();
+                    //var objusuarios = context.Usuarios.FromSqlRaw($"UsuarioGetById {IdUsuario}").AsEnumerable().FirstOrDefault();
+
+                    result.Objects = new List<object>();
+
+                    if (objaseguradora != null)
+                    {
+
+                        ML.Aseguradora aseguradora = new ML.Aseguradora();
+                        aseguradora.IdAseguradora = objaseguradora.IdAsegurradora;
+                        aseguradora.Nombre = objaseguradora.Nombre;
+                        aseguradora.FechaCreacion = objaseguradora.FechaCreacion.ToString();
+                        aseguradora.FechaModificacion = objaseguradora.FechaModificacion.ToString();
+                        aseguradora.Usuario = new ML.Usuario();
+                        aseguradora.Usuario.IdUsuario = objaseguradora.IdUsuario.Value;
+                        aseguradora.Usuario.Nombre = objaseguradora.UsuarioNombre;
+                        
+
+
+
+                        result.Object = aseguradora;
+
+
+                        result.Correct = true;
+                    }
+                    else
+                    {
+                        result.Correct = false;
+                        result.ErrorMessage = "Ocurrió un error al obtener los registros en la tabla Departamento";
+                    }
+
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                result.Correct = false;
+                result.ErrorMessage = ex.Message;
+                result.Ex = ex;
+            }
+
+            return result;
+        }
+
+
+    }
+}
+
+----BL USUario
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BL
+{
+    public class Usuario
+    {
+        public static ML.Result AddEF(ML.Usuario usuario)
+        {
+            ML.Result result = new ML.Result();
+
+            try
+            {
+                using (DL.VAvilesProgramacionNCapasContext context = new DL.VAvilesProgramacionNCapasContext())
+                {
+                    //var query = context.Database.ExecuteSqlRaw($"AseguradoraAdd '{aseguradora.Nombre}',{aseguradora.Usuario.IdUsuario}");
+                    var query = context.Database.ExecuteSqlRaw($"UsuarioAdd '{usuario.Nombre}','{usuario.ApellidoPaterno}', '{usuario.ApellidoMaterno}', '{usuario.Email}','{usuario.Sexo}', '{usuario.Telefono}', '{usuario.Celular}', '{usuario.FechaNacimiento}', '{usuario.CURP}', {usuario.Rol.IdRol}");
+
+                    
+                    if (query >= 1)
+                    {
+                        result.Correct = true;
+                    }
+                    else
+                    {
+                        result.Correct = false;
+                        result.ErrorMessage = "No se insertó el registro";
+                    }
+
+                    result.Correct = true;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Correct = false;
+                result.ErrorMessage = ex.Message;
+            }
+            return result;
+        }
+        //UPDATE
+
+        public static ML.Result UpdateEF(ML.Usuario usuario) //12/12/2019 No se elimina la credencial, se cambia
+        {
+            ML.Result result = new ML.Result();
+            try
+            {
+                using (DL.VAvilesProgramacionNCapasContext context = new DL.VAvilesProgramacionNCapasContext())
+
+                {
+                    //var updateResult = context.UsuarioUpdate(usuario.IdUsuario, usuario.Nombre, usuario.ApellidoPaterno, usuario.ApellidoMaterno,
+                    //    usuario.Email, usuario.Sexo, usuario.Telefono, usuario.Celular, usuario.FechaNacimiento, usuario.CURP, usuario.Rol.IdRol);
+                    var query = context.Database.ExecuteSqlRaw($"UsuarioUpdate  {usuario.IdUsuario},'{usuario.Nombre}','{usuario.ApellidoPaterno}', '{usuario.ApellidoMaterno}', '{usuario.Email}','{usuario.Sexo}', '{usuario.Telefono}', '{usuario.Celular}', '{usuario.FechaNacimiento}', '{usuario.CURP}', {usuario.Rol.IdRol}");
+
+                    if (query >= 1)
+                    {
+                        result.Correct = true;
+                    }
+                    else
+                    {
+                        result.Correct = false;
+                        result.ErrorMessage = "No se actualizó el status de la credencial";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Correct = false;
+                result.ErrorMessage = ex.Message;
+            }
+
+            return result;
+        }
+        //DELETE
+        public static ML.Result DeleteEF(ML.Usuario usuario) //12/12/2019 No se elimina la credencial, se cambia
+        {
+            ML.Result result = new ML.Result();
+            try
+            {
+
+
+                using (DL.VAvilesProgramacionNCapasContext context = new DL.VAvilesProgramacionNCapasContext())
+
+                {
+                    // var updateResult = context.UsuarioDelete(usuario.IdUsuario);
+                    var query = context.Database.ExecuteSqlRaw($"UsuarioDelete {usuario.IdUsuario}");
+
+                    if (query >= 1)
+                    {
+                        result.Correct = true;
+                    }
+                    else
+                    {
+                        result.Correct = false;
+                        result.ErrorMessage = "No se actualizó el status de la credencial";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Correct = false;
+                result.ErrorMessage = ex.Message;
+            }
+
+            return result;
+        }
+        //GETALL
+
+        public static ML.Result UsuarioGetAllEF()
+        {
+            ML.Result result = new ML.Result();
+
+            try
+            {
+                using (DL.VAvilesProgramacionNCapasContext context = new DL.VAvilesProgramacionNCapasContext())
+                {
+
+                    // var aseguradoras = context.Aseguradoras.FromSqlRaw($"AseguradoraGetAll").ToList();
+                    var usuarios = context.Usuarios.FromSqlRaw($"UsuarioGetAll").ToList();
+
+                    result.Objects = new List<object>();
+
+                    if (usuarios != null)
+                    {
+                        foreach (var obj in usuarios)
+                        {
+                            ML.Usuario usuario = new ML.Usuario();
+
+                            usuario.IdUsuario = obj.IdUsuario;
+                            usuario.Nombre = obj.Nombre;
+                            usuario.ApellidoPaterno = obj.ApellidoPaterno;
+                            usuario.ApellidoMaterno = obj.ApellidoMaterno;
+                            usuario.Email = obj.Email;
+                            usuario.Sexo = obj.Sexo;
+                            usuario.Telefono = obj.Telefono;
+                            usuario.Celular = obj.Celular;
+                            usuario.FechaNacimiento = obj.FechaNacimiento.ToString();
+                            usuario.CURP = obj.Curp;
+                            usuario.Imagen =obj.Imagen;
+                            usuario.Rol = new ML.Rol();
+                            usuario.Rol.IdRol = obj.IdRol.Value;
+                            usuario.Rol.Nombre = obj.RolNombre;
+
+                            result.Objects.Add(usuario);
+                        }
+
+                        result.Correct = true;
+                    }
+                    else
+                    {
+                        result.Correct = false;
+                        result.ErrorMessage = "No se encontraron registros.";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                result.Correct = false;
+                result.ErrorMessage = ex.Message;
+
+            }
+
+            return result;
+        }
+        public static ML.Result GetByIdEF(int IdUsuario)
+        {
+            ML.Result result = new ML.Result();
+            try
+            {
+                using (DL.VAvilesProgramacionNCapasContext context = new DL.VAvilesProgramacionNCapasContext())
+                {
+                    //var objDepartamento = context.DepartamentoGetById(IdDepartamento).FirstOrDefault();
+                    //var objusuarios = context..UsuarioGetById(IdUsuario).FirstOrDefault();
+                    var objusuarios = context.Usuarios.FromSqlRaw($"UsuarioGetById {IdUsuario}").AsEnumerable().FirstOrDefault();
+
+
+                    result.Objects = new List<object>();
+
+                    if (objusuarios != null)
+                    {
+
+                        ML.Usuario usuario = new ML.Usuario();
+                        usuario.IdUsuario = objusuarios.IdUsuario;
+                        usuario.Nombre = objusuarios.Nombre;
+                        usuario.ApellidoPaterno = objusuarios.ApellidoPaterno;
+                        usuario.ApellidoMaterno = objusuarios.ApellidoMaterno;
+                        usuario.Email = objusuarios.Email;
+                        usuario.Sexo = objusuarios.Sexo;
+                        usuario.Telefono = objusuarios.Telefono;
+                        usuario.Celular = objusuarios.Celular;
+                        usuario.FechaNacimiento = objusuarios.FechaNacimiento.ToString();
+                        usuario.CURP = objusuarios.Curp;
+                        usuario.Imagen = objusuarios.Imagen;
+                        usuario.Rol = new ML.Rol();
+                        usuario.Rol.IdRol = objusuarios.IdRol.Value;
+                        usuario.Rol.Nombre = objusuarios.RolNombre;
+
+
+                        result.Object = usuario;
+
+
+                        result.Correct = true;
+                    }
+                    else
+                    {
+                        result.Correct = false;
+                        result.ErrorMessage = "Ocurrió un error al obtener los registros en la tabla Departamento";
+                    }
+
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                result.Correct = false;
+                result.ErrorMessage = ex.Message;
+                result.Ex = ex;
+            }
+
+            return result;
+        }
+        
+
+    }
+}
+-----CONTROLLER
+using Microsoft.AspNetCore.Mvc;
+
+namespace PL.Controllers
+{
+    public class UsuarioController : Controller
+    {
+        // GET: Usuario
+        public ActionResult GetAll()
+        {
+            //llamo al get all de aseguradora
+            ML.Result result = BL.Usuario.UsuarioGetAllEF();
+
+            //creo una instancia de aseguradora
+            ML.Usuario usuario = new ML.Usuario();
+
+            //paso de mi lista result.objects a mi lista de aseguradoras
+            usuario.Usuarios = result.Objects;
+            //aseguradora.Aseguradoras = result.Objects;
+            return View(usuario);
+            //return View();
+        }
+
+        [HttpGet]
+        public ActionResult Form(int? IdUsuario)
+        {
+            ML.Usuario usuario = new ML.Usuario();
+            ML.Result resultRol = BL.Rol.RolAllEF();
+
+            usuario.Rol = new ML.Rol();
+            usuario.Rol.Roles = resultRol.Objects.ToList();
+
+            if (IdUsuario == null)//ADD
+            {
+
+                return View(usuario);
+            }
+            else  //UPDATE
+            {
+                ML.Result result = BL.Usuario.GetByIdEF(IdUsuario.Value);
+
+                if (result.Correct)
+                {
+                    //usuario = new ML.Usuario();
+                    usuario = ((ML.Usuario)result.Object);
+                    usuario.Rol = new ML.Rol();
+                    usuario.Rol.Roles = resultRol.Objects.ToList();
+                   
+                    return View(usuario);
+                }
+            }
+            return View(usuario);
+
+        }
+
+
+
+
+        [HttpPost]
+        public ActionResult Form(ML.Usuario usuario)
+        {
+            ML.Result result = new ML.Result();
+
+            if (usuario.IdUsuario != 0)
+            {
+                result = BL.Usuario.UpdateEF(usuario);
+
+                if (result.Correct)
+                {
+                    ViewBag.Message = "Se actualizo el usuario";
+                    return PartialView("Modal");
+                }
+                else
+                {
+                    ViewBag.Message = "No se actualizo" + result.ErrorMessage;
+                    return PartialView("Modal");
+                }
+            }
+            else
+            {
+                result = BL.Usuario.AddEF(usuario);
+
+                if (result.Correct)
+                {
+                    ViewBag.Message = "Se ha registrado correctaente el producto";
+                    return PartialView("Modal");
+                }
+                else
+                {
+                    ViewBag.Message = "Ha ocurrido un error" + result.ErrorMessage;
+                    return PartialView("Modal");
+                }
+            }
+
+
+
+        }
+        [HttpGet]
+        public ActionResult Delete(int IdUsuario)
+        {
+            ML.Usuario usuario = new ML.Usuario();
+            usuario.IdUsuario = IdUsuario;
+
+            ML.Result result = BL.Usuario.DeleteEF(usuario);
+            if (result.Correct)
+            {
+                return RedirectToAction("GetAll");
+            }
+            else
+            {
+                return PartialView("Modal");
+            }
+
+        }
+    }
+}
+----ASEGURADROA CONTROLLER
+using Microsoft.AspNetCore.Mvc;
+
+namespace PL.Controllers
+{
+    public class AseguradoraController : Controller
+    {
+
+            // GET: Aseguradora
+            public ActionResult GetAll()
+            {
+                //llamo al get all de aseguradora
+                ML.Result result = BL.Aseguradora.AseguradoraGetAllEF();
+
+                //creo una instancia de aseguradora
+                ML.Aseguradora aseguradora = new ML.Aseguradora();
+
+                //paso de mi lista result.objects a mi lista de aseguradoras
+                aseguradora.Aseguradoras = result.Objects;
+
+                return View(aseguradora);
+            }
+            [HttpGet]
+
+
+            public ActionResult Form(int? IdAseguradora)
+            {
+                ML.Aseguradora aseguradora = new ML.Aseguradora();
+                ML.Result resultUsuario = BL.Usuario.UsuarioGetAllEF();
+
+                aseguradora.Usuario = new ML.Usuario();
+                aseguradora.Usuario.Usuarios = resultUsuario.Objects.ToList();
+
+                if (IdAseguradora == null)
+                {
+
+
+                    return View(aseguradora);
+
+                }
+                else
+                {
+                    ML.Result result = BL.Aseguradora.GetByIdEF(IdAseguradora.Value);
+
+                    if (result.Correct)
+
+                    {
+                         aseguradora = ((ML.Aseguradora)result.Object);
+                        aseguradora.Usuario = new ML.Usuario();
+                        aseguradora.Usuario.Usuarios = resultUsuario.Objects.ToList();
+                            
+                       
+                        return View(aseguradora);
+
+                    }
+
+                }
+                return View(aseguradora);
+
+
+
+            }
+
+
+
+            [HttpPost]
+            public ActionResult Form(ML.Aseguradora aseguradora)
+            {
+                ML.Result result = new ML.Result();
+
+                //si trae el id va acutualizar 
+                if (aseguradora.IdAseguradora != 0)
+                {
+                    result = BL.Aseguradora.AseguradoraUpdateEF(aseguradora);
+
+                    if (result.Correct)
+                    {
+                        ViewBag.Message = "Se actualizo el usuario";
+                        return PartialView("Modal");
+                    }
+                    else
+                    {
+                        ViewBag.Message = "No se actualizo" + result.ErrorMessage;
+                        return PartialView("Modal");
+                    }
+                }
+                else
+                {
+                    result = BL.Aseguradora.AseguradoraAddEF(aseguradora);
+
+                    if (result.Correct)
+                    {
+                        ViewBag.Message = "Se ha registrado correctaente el producto";
+                        return PartialView("Modal");
+                    }
+                    else
+                    {
+                        ViewBag.Message = "Ha ocurrido un error" + result.ErrorMessage;
+                        return PartialView("Modal");
+                    }
+                }
+            }
+
+            [HttpGet]
+            public ActionResult Delete(int IdAseguradora)
+            {
+                ML.Aseguradora aseguradora = new ML.Aseguradora();
+                aseguradora.IdAseguradora = IdAseguradora;
+
+                ML.Result result = BL.Aseguradora.AseguradoraDeleteEF(aseguradora);
+                if (result.Correct)
+                {
+                    return RedirectToAction("GetAll");
+                }
+                else
+                {
+                    return PartialView("Modal");
+                }
+
+            }
+        }
+}
+
+-----------MLUsuario
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ML
+{
+    public class Usuario
+    {
+        public int IdUsuario { get; set; }
+        //public string UserName { get; set; }
+        public string Nombre { get; set; }
+        public string ApellidoPaterno { get; set; }
+        public string ApellidoMaterno { get; set; }
+        public string Email { get; set; }
+        public string Sexo { get; set; }
+        public string Telefono { get; set; }
+        public string Celular { get; set; }
+        public string FechaNacimiento { get; set; }
+        public string CURP { get; set; }
+        public byte[] Imagen { get; set; }
+        public ML.Rol Rol { get; set; }
+        public List<object> Usuarios { get; set; }
+
+    }
+}
+---ML Aseguaradora
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ML
+{
+    public class Aseguradora
+    {
+        public int IdAseguradora { get; set; }
+        public string Nombre { get; set; }
+        public string FechaCreacion { get; set; }
+        public string FechaModificacion { get; set; }
+        //Llave foranea a usuario 
+        //public int IdUsuario   { get; set; }
+        public ML.Usuario Usuario { get; set; }
+
+        public List<object> Aseguradoras { get; set; }
+    }
+}
+-------DL
+using System;
+using System.Collections.Generic;
+
+namespace DL
+{
+    public partial class Usuario
+    {
+        public Usuario()
+        {
+            Aseguradoras = new HashSet<Aseguradora>();
+        }
+
+        public int IdUsuario { get; set; }
+        public string Nombre { get; set; } = null!;
+        public string ApellidoPaterno { get; set; } = null!;
+        public string? ApellidoMaterno { get; set; }
+        public string Email { get; set; } = null!;
+        public string Sexo { get; set; } = null!;
+        public string Telefono { get; set; } = null!;
+        public string Celular { get; set; } = null!;
+        public DateTime? FechaNacimiento { get; set; }
+        public string? Curp { get; set; }
+        public byte[]? Imagen { get; set; }
+        public int? IdRol { get; set; }
+
+        public virtual Rol? IdRolNavigation { get; set; }
+        public virtual ICollection<Aseguradora> Aseguradoras { get; set; }
+
+        public string RolNombre { get; set; }   
+    }
+}
+---AseguradoraDL
+using System;
+using System.Collections.Generic;
+
+namespace DL
+{
+    public partial class Aseguradora
+    {
+        public int IdAsegurradora { get; set; }
+        public string? Nombre { get; set; }
+        public DateTime FechaCreacion { get; set; }
+        public DateTime FechaModificacion { get; set; }
+        public int? IdUsuario { get; set; }
+
+        public virtual Usuario? IdUsuarioNavigation { get; set; }
+
+        public string UsuarioNombre { get; set; }
+    }
+}
+
+
