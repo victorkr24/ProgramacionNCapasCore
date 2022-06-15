@@ -1,0 +1,55 @@
+ ALTER PROCEDURE [dbo].[UsuarioGetById] 5
+@IdUsuario INT
+AS
+	SELECT Usuario.[IdUsuario]
+      ,Usuario.[UserName]
+      ,Usuario.[Nombre]
+      ,Usuario.[ApellidoPaterno]
+      ,Usuario.[ApellidoMaterno]
+      ,Usuario.[Email]
+      ,Usuario.[Sexo]
+      ,Usuario.[Telefono]
+      ,Usuario.[Celular]
+      ,Usuario.[FechaNacimiento]
+      ,Usuario.[CURP]
+	  ,Usuario.[IdRol]
+	  ,Rol.Nombre as RolNombre
+  FROM [Usuario]
+  INNER JOIN Rol on Usuario.IdRol = Rol.IdRol
+  WHERE IdUsuario = @IdUsuario
+
+
+-------------------------------------------------
+ALTER PROCEDURE [dbo].[UsuariosGetAll]
+AS
+	SELECT
+	Usuario.[IdUsuario]
+      ,Usuario.[UserName]
+      ,Usuario.[Nombre]
+      ,Usuario.[ApellidoPaterno]
+      ,Usuario.[ApellidoMaterno]
+      ,Usuario.[Email]
+      ,Usuario.[Sexo]
+      ,Usuario.[Telefono]
+      ,Usuario.[Celular]
+      ,Usuario.[FechaNacimiento]
+      ,Usuario.[CURP]
+	  ,Usuario.[IdRol]
+	  ,Rol.Nombre as RolNombre
+
+  FROM [Usuario]
+  INNER JOIN Rol ON Usuario.IdRol = Rol.IdRol
+
+-----------------------------------
+  ALTER PROCEDURE [dbo].[AseguradoraGetAll]
+AS
+	SELECT
+		Aseguradora.IdAseguradora,
+      Aseguradora.Nombre,
+	  Aseguradora.FechaCreacion,
+	  Aseguradora.FechaModificacion,
+      Aseguradora.IdUsuario,
+	  Usuario.Nombre as UsuarioNombre
+  FROM Aseguradora
+  inner join Usuario on Aseguradora.IdUsuario = Usuario.IdUsuario
+  UsuariosGetAll
