@@ -17,5 +17,6 @@ namespace ML
         public ML.Usuario Usuario { get; set; }
 
         public List<object> Aseguradoras { get; set; }
+        public string UsuarioNombre { get; set; }
     }
 }

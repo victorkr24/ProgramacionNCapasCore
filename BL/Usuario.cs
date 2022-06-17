@@ -86,7 +86,7 @@ namespace BL
                 using (DL.LEscogidoProgramacionNCapasMayoContext context = new DL.LEscogidoProgramacionNCapasMayoContext())
                 {
                    // var updateResult = context.UsuarioDelete(usuario.IdUsuario);
-                        var query = context.Database.ExecuteSqlRaw($"{usuario.IdUsuario}");
+                        var query = context.Database.ExecuteSqlRaw($"UsuarioDelete {usuario.IdUsuario}");
                     
                     if (query >= 1)
                     {
@@ -119,7 +119,7 @@ namespace BL
                 {
 
                    // var aseguradoras = context.Aseguradoras.FromSqlRaw($"AseguradoraGetAll").ToList();
-                    var usuarios = context.Usuarios.FromSqlRaw($"UsuarioGetAll").ToList();
+                    var usuarios = context.Usuarios.FromSqlRaw($"UsuariosGetAll").ToList();
 
                     result.Objects = new List<object>();
 
@@ -186,6 +186,7 @@ namespace BL
                         ML.Usuario usuario = new ML.Usuario();
                         usuario.IdUsuario = objusuarios.IdUsuario;
                         usuario.Nombre = objusuarios.Nombre;
+                        usuario.UserName = objusuarios.UserName;
                         usuario.ApellidoPaterno = objusuarios.ApellidoPaterno;
                         usuario.ApellidoMaterno = objusuarios.ApellidoMaterno;
                         usuario.Email = objusuarios.Email;

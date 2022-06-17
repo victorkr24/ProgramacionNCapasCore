@@ -160,5 +160,58 @@ namespace BL
 
             return result;
         }
+        public static ML.Result GetByIdEF(int IdAseguradora)
+        {
+            ML.Result result = new ML.Result();
+            try
+            {
+                using (DL.LEscogidoProgramacionNCapasMayoContext context = new DL.LEscogidoProgramacionNCapasMayoContext())
+                {
+                    //var objDepartamento = context.DepartamentoGetById(IdDepartamento).FirstOrDefault();
+                    var objaseguradora = context.Aseguradoras.FromSqlRaw($"AseguradoraGetById{IdAseguradora}").AsEnumerable().FirstOrDefault();
+                    //var objusuarios = context.Usuarios.FromSqlRaw($"UsuarioGetById {IdUsuario}").AsEnumerable().FirstOrDefault();
+
+                    result.Objects = new List<object>();
+
+                    if (objaseguradora != null)
+                    {
+
+                        ML.Aseguradora aseguradora = new ML.Aseguradora();
+                        aseguradora.IdAseguradora = objaseguradora.IdAseguradora;
+                        aseguradora.Nombre = objaseguradora.Nombre;
+                        aseguradora.FechaCreacion = objaseguradora.FechaCreacion.ToString();
+                        aseguradora.FechaModificacion = objaseguradora.FechaModificacion.ToString();
+                        aseguradora.Usuario = new ML.Usuario();
+                        aseguradora.Usuario.IdUsuario = objaseguradora.IdUsuario.Value;
+                        aseguradora.Usuario.Nombre = objaseguradora.UsuarioNombre;
+
+
+
+
+                        result.Object = aseguradora;
+
+
+                        result.Correct = true;
+                    }
+                    else
+                    {
+                        result.Correct = false;
+                        result.ErrorMessage = "Ocurrió un error al obtener los registros en la tabla Departamento";
+                    }
+
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                result.Correct = false;
+                result.ErrorMessage = ex.Message;
+                result.Ex = ex;
+            }
+
+            return result;
+        }
+
     }
 }

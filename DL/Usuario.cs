@@ -4,14 +4,12 @@ using System.Collections.Generic;
 namespace DL
 {
     public partial class Usuario
-
-
     {
-
         public Usuario()
         {
-            Aseguradoras = new HashSet<Aseguradora>();
+            Direccions = new HashSet<Direccion>();
         }
+
         public int IdUsuario { get; set; }
         public string UserName { get; set; } = null!;
         public string? Nombre { get; set; }
@@ -26,7 +24,7 @@ namespace DL
         public int? IdRol { get; set; }
 
         public virtual Rol? IdRolNavigation { get; set; }
-        public virtual ICollection<Aseguradora> Aseguradoras{ get; set; }
-        public string RolNombre  { get; set; }  
+        public virtual ICollection<Direccion> Direccions { get; set; }
+        public string RolNombre { get; set; }
     }
 }
